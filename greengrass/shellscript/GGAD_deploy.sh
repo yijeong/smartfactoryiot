@@ -29,4 +29,4 @@ chmod 400 ~/sfworkshop-keypair.pem
 sleep 10
 
 echo Create an EC2 instance, the Greengrass Awared Device of Greengrass Core Group ...
-aws ec2 run-instances --image-id ami-07ebfd5b3428b6f4d --instance-type t3.large --key-name sfworkshop-keypair --security-group-ids $ggad_secg --subnet-id $ggad_subnet --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=SFworkshop-thing}]' --region us-east-1 --output json
+aws ec2 run-instances --image-id ami-07ebfd5b3428b6f4d --instance-type t3.large --key-name sfworkshop-keypair --security-group-ids $ggad_secg --subnet-id $ggad_subnet --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=SFworkshop-thing}]' --region us-east-1 --output json --user-data file://userdata.sh 
