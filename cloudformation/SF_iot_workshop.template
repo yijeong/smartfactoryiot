@@ -232,36 +232,7 @@
         ]
       }
     },
-    "Instance": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "ImageId": "ami-07ebfd5b3428b6f4d",
-        "InstanceType": "t3.large",
-        "NetworkInterfaces": [
-          {
-            "GroupSet": [
-              {
-                "Ref": "InstanceSecurityGroup"
-              }
-            ],
-            "DeviceIndex": "0",
-            "DeleteOnTermination": "true",
-            "SubnetId": {
-              "Ref": "SubnetAZ2"
-            }
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "SFworkshop-thing"
-          }
-        ],
-        "KeyName": {
-          "Ref": "KeyName"
-        }
-      }
-    },
+    
     "deliverystream": {
       "DependsOn": [
         "deliveryPolicy"
