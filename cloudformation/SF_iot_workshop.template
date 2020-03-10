@@ -1,0 +1,430 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation template for Smart Factory IoT workshop. This template will create some resources for Amazon VPC, Amazon EC2, Cloud9, Amazon kinesis, Amazon S3 and regarding IAM resources. ",
+  "Parameters": {
+
+    
+  },
+
+  "Resources": {
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SFworkshop-VPC"
+          }
+        ]
+      }
+    },
+    "SubnetAZ1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            "0",
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SFworkshop-public-Sub"
+          }
+        ]
+      }
+    },
+    "SubnetAZ2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": "10.0.2.0/24",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            "1",
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SFworkshop-private-Sub"
+          }
+        ]
+      }
+    },
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SFworkshop-IGW"
+          }
+        ]
+      }
+    },
+    "AttachGateway": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "EIPAddressforNAT": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "NAT": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "EIPAddressforNAT",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "SubnetAZ1"
+        },
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "SFworkshop-NATGW"
+          }
+        ]
+      }
+    },
+    "PublicRT": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SFworkshop-public-RT"
+          }
+        ]
+      }
+    },
+    "SubnetRouteTableAssociation1": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "SubnetAZ1"
+        },
+        "RouteTableId": {
+          "Ref": "PublicRT"
+        }
+      }
+    },
+    "PrivateRT": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SFworkshop-public-RT"
+          }
+        ]
+      }
+    },
+    "SubnetRouteTableAssociation2": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "SubnetAZ2"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateRT"
+        }
+      }
+    },
+    "PublicRoute": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "AttachGateway",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicRT"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "PrivateRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PrivateRT"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "NAT"
+        }
+      }
+    },
+    "Cloud9Instance": {
+      "Description": "-",
+      "Type": "AWS::Cloud9::EnvironmentEC2",
+      "Properties": {
+        "Description": "AWS Cloud9 instance for IoT workshops",
+        "AutomaticStopTimeMinutes": 120,
+        "InstanceType": "c5.large",
+        "Name": "SFworkshop-GGC",
+        "SubnetId": {
+          "Ref": "SubnetAZ1"
+        }
+      }
+    },
+    "InstanceSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "GroupDescription": "secgroup for thing device",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SFworkshop-ec2-secgroup"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "10.0.0.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8883",
+            "ToPort": "8883",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-07ebfd5b3428b6f4d",
+        "InstanceType": "t3.large",
+        "NetworkInterfaces": [
+          {
+            "GroupSet": [
+              {
+                "Ref": "InstanceSecurityGroup"
+              }
+            ],
+            "DeviceIndex": "0",
+            "DeleteOnTermination": "true",
+            "SubnetId": {
+              "Ref": "SubnetAZ2"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "SFworkshop-thing"
+          }
+        ],
+        "KeyName": {
+          "Ref": "KeyName"
+        }
+      }
+    },
+    "deliverystream": {
+      "DependsOn": [
+        "deliveryPolicy"
+      ],
+      "Type": "AWS::KinesisFirehose::DeliveryStream",
+      "Properties": {
+        "DeliveryStreamName": "aws-waf-logs-test",
+        "ExtendedS3DestinationConfiguration": {
+          "BucketARN": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:s3:::",
+                {
+                  "Ref": "s3bucket"
+                }
+              ]
+            ]
+          },
+          "BufferingHints": {
+            "IntervalInSeconds": "60",
+            "SizeInMBs": "50"
+          },
+          "CompressionFormat": "UNCOMPRESSED",
+          "Prefix": "firehose/",
+          "RoleARN": {
+            "Fn::GetAtt": [
+              "deliveryRole",
+              "Arn"
+            ]
+          }
+        }
+      }
+    },
+    "deliveryRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "firehose.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": {
+                    "Ref": "AWS::AccountId"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "deliveryPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "firehose_delivery_policy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:AbortMultipartUpload",
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:PutObject"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "s3bucket"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "s3bucket"
+                      },
+                      "*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "deliveryRole"
+          }
+        ]
+      }
+    }, 
+    "s3bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      }
+    }
+  },
+
+ 
+
+  "Outputs": {
+    "Cloud9": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".console.aws.amazon.com/cloud9/ide/",
+            {
+              "Ref": "Cloud9Instance"
+            },
+            "?region=",
+            {
+              "Ref": "AWS::Region"
+            }
+          ]
+        ]
+      },
+      "Description": "cloud9(GGC) endpoint"
+    },
+    "InstanceId": {
+      "Value": {
+        "Ref": "Instance"
+      },
+      "Description": "Thing Device instance"
+    },
+    "KinesisFirehose": {
+      "Value": {
+        "Ref": "deliverystream"
+      },
+      "Description": "delivery stream name"
+    },
+    "S3bucket": {
+      "Value": {
+        "Ref": "s3bucket"
+      },
+      "Description": "s3 bucket name"
+    }
+  }
+}
