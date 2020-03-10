@@ -379,12 +379,6 @@
       },
       "Description": "cloud9(GGC) endpoint"
     },
-    "InstanceId": {
-      "Value": {
-        "Ref": "Instance"
-      },
-      "Description": "Thing Device instance"
-    },
     "KinesisFirehose": {
       "Value": {
         "Ref": "deliverystream"
