@@ -239,7 +239,7 @@
       ],
       "Type": "AWS::KinesisFirehose::DeliveryStream",
       "Properties": {
-        "DeliveryStreamName": "aws-waf-logs-test",
+        "DeliveryStreamName": "SFworkshop-data-fh",
         "ExtendedS3DestinationConfiguration": {
           "BucketARN": {
             "Fn::Join": [
