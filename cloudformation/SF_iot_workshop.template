@@ -273,8 +273,6 @@
               [
                 "#!/bin/bash\n",
                 "sudo apt-get update\n",
-                "mkdir /home/ubuntu/dependencies\n",
-                "cd /home/ubuntu/dependencies\n",
                 "sudo apt-get -y install build-essential\n",
                 "sudo apt-get -y install cmake\n",
                 "sudo apt-get -y install zlibc\n",
