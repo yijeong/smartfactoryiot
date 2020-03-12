@@ -247,7 +247,7 @@
     "thinginstance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": "ami-07ebfd5b3428b6f4d",
+        "ImageId": "ami-0646660d0784b7cc2",
         "InstanceType": "t3.large",
         "SubnetId" : {
           "Ref": "SubnetAZ2"
@@ -272,16 +272,7 @@
               "",
               [
                 "#!/bin/bash\n",
-                "sudo apt-get update\n",
-                "sudo apt-get -y install build-essential\n",
-                "sudo apt-get -y install cmake\n",
-                "sudo apt-get -y install zlibc\n",
-                "sudo apt-get -y install libssl-dev\n",
-                "sudo apt-get -y install unzip\n",
-                "sudo apt-get -y install python3-pip\n",             
-                "sudo python3 -m pip install AWSIoTPythonSDK\n",
-                "sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 3\n",
-                "sudo update-alternatives --config python\n"
+                "sudo apt-get update\n"
               ]
             ]
           }
@@ -313,7 +304,7 @@
     "admininstance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": "ami-07ebfd5b3428b6f4d",
+        "ImageId": "ami-0646660d0784b7cc2",
         "InstanceType": "t2.micro",
         "KeyName": {
           "Ref": "KeyName"
@@ -335,13 +326,7 @@
               "",
               [
                 "#!/bin/bash\n",
-                "sudo apt-get update\n",
-                "mkdir /home/ubuntu/dependencies\n",
-                "cd /home/ubuntu/dependencies\n",
-                "sudo apt-get -y install build-essential\n",
-                "sudo apt-get -y install cmake\n",
-                "sudo apt-get -y install zlibc\n",
-                "sudo apt-get -y install libssl-dev\n"
+                "sudo apt-get update\n"
               ]
             ]
           }
