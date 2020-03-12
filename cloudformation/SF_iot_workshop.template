@@ -495,11 +495,11 @@
       "Description": "cloud9(GGC) endpoint"
     },
     "thingInstanceId" : {
-      "Value" : {  "Fn::GetAtt" : [ "thinginstance", "PrivateIP" ] },
+      "Value" : {  "Fn::GetAtt" : [ {"Ref": "thinginstance"}, "PrivateIP" ] },
       "Description" : "Instance private ip for thing device"
     },
     "adminInstanceId" : {
-      "Value" : { "Fn::GetAtt" : [ "admininstance", "PublicIP" ] },
+      "Value" : { "Fn::GetAtt" : [ {"Ref": "admininstance"}, "PublicIP" ] },
       "Description" : "Instance public ip for for admin (secure tunneling)"
     },
     "KinesisFirehose": {
