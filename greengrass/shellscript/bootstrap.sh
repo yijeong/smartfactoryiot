@@ -46,3 +46,12 @@ cd build
 sudo cmake ../
 sudo make
 sudo make install
+
+# local proxy 설치
+cd ~/dependencies
+git clone https://github.com/aws-samples/aws-iot-securetunneling-localproxy
+cd aws-iot-securetunneling-localproxy
+mkdir build
+cd build
+cmake ../
+make
