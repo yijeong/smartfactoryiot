@@ -247,7 +247,7 @@
     "thinginstance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": "ami-0646660d0784b7cc2",
+        "ImageId": "ami-0288c6a2b5cce531e",
         "InstanceType": "t3.large",
         "SubnetId" : {
           "Ref": "SubnetAZ2"
@@ -304,8 +304,8 @@
     "admininstance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": "ami-0646660d0784b7cc2",
-        "InstanceType": "t2.micro",
+        "ImageId": "ami-0288c6a2b5cce531e",
+        "InstanceType": "t3.large",
         "KeyName": {
           "Ref": "KeyName"
         },
