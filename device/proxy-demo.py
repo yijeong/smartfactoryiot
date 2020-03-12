@@ -75,7 +75,7 @@ myAWSIoTMQTTClient = None
 myAWSIoTMQTTClient = AWSIoTMQTTClient(thing_name)
 myAWSIoTMQTTClient.configureEndpoint(host, 443)
 #myAWSIoTMQTTClient.configureCredentials("AmazonRootCA1.pem", "{0}.private.key".format(thing_name), "{0}.cert.pem".format(thing_name))
-myAWSIoTMQTTClient.configureCredentials("AmazonRootCA1.pem", iot_private_key, iot_certificate)
+myAWSIoTMQTTClient.configureCredentials("root-CA.crt", iot_private_key, iot_certificate)
 
 # AWSIoTMQTTClient connection configuration
 myAWSIoTMQTTClient.configureAutoReconnectBackoffTime(1, 32, 20)
