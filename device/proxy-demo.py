@@ -26,7 +26,7 @@ import subprocess
 aws_region = "us-east-1"
 localproxy_path = "/home/ubuntu/dependencies/aws-iot-securetunneling-localproxy/build/bin/localproxy"
 iot_endpoint = " " # xxxxxxxxxxxx-ats.iot.us-east-1.amazonaws.com
-iot_thingname = "SFworkshop-thing"
+iot_thingname = "SFworkshop_thing"
 iot_private_key = "SFworkshop_thing.private.key" # xxxxxxxxxx-private.pem.key
 iot_certificate = "SFworkshop_thing.cert.pem" # xxxxxxxxxx-certificate.pem.crt
 
